@@ -57,13 +57,17 @@ def process_webhook():
     # Dialogflow로 응답되는 최종 데이터 확인
     # print(book_list)
     title = BeautifulSoup(item_list[0]['title'],'html.parser').text
+    print(len(item_list[0]['actor']))
+    if len(item_list[0]['actor']) >50:
+        item_list[0]['actor'] = item_list[0]['actor'][:15]+"..."
+    print(len(item_list[0]['actor']))
 
     return {"fulfillmentText": "This is a text response",
       "fulfillmentMessages": [
         {
           "card": {
             "title": title,
-            "subtitle": "출연진:"+item_list[0]['actor']+'\n'+"평점:"+item_list[0]['userRating']+"\n"+"감독 : "+item_list[0]['director']+'\n'+"개봉년도:"+item_list[0]['pubDate'],
+            "subtitle": "출연진:"+item_list[0]['actor']+'\n'+"감독:"+item_list[0]['director']+"\n"+"평점 : "+item_list[0]['userRating']+'\t'+"개봉년도:"+item_list[0]['pubDate'],
             "imageUri": item_list[0]['image'],
             "buttons": [
               {
