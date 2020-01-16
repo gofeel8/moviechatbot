@@ -1,11 +1,9 @@
 from flask import Flask, request
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 import requests
 
-
-
 app = Flask(__name__)
-
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def process_webhook():
@@ -83,9 +81,23 @@ def process_webhook():
           ]}
 
     if request_json["queryResult"]["parameters"]["rank"]:
-        
-        print("rank")
-        return {"fulfillmentText": "good",}
+        user_agent = UserAgent()
+        main_url = "http://www.cgv.co.kr/movies/"
+        page = requests.get(main_url, headers={'user-agent': user_agent.chrome})
+        soup = BeautifulSoup(page.content, 'lxml')
+
+        rank = soup.find_all('div', class_="box-contents")
+
+        rank_list = []
+
+        for gps in rank:
+            # a=gps.strong
+            title = BeautifulSoup(gps.strong.text, 'html.parser').text
+            rank_list.append(title)
+            # print(title)  # 제목
+
+        print(rank_list)
+        return {"fulfillmentText": "1위: "+rank_list[0]+"\n"+"2위: "+rank_list[1]+"\n"+"3위: "+rank_list[2]+"\n"+"4위: "+rank_list[3]+"\n"+"5위: "+rank_list[4]+"\n"+"6위: "+rank_list[5]+"\n"+"7위: "+rank_list[6]}
 
 
 if __name__ == '__main__':
